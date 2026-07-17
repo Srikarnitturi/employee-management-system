@@ -1,0 +1,22 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Python cache
+.pytest_cache/
+
+# React
+frontend/node_modules/
+
+# Logs
+*.log
