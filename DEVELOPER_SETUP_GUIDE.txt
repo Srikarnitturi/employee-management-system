@@ -1,0 +1,763 @@
+EMPLOYEE MANAGEMENT SYSTEM
+DEVELOPER SETUP & TROUBLESHOOTING GUIDE
+========================================
+
+Purpose
+-------
+This file documents the local development setup for the Employee Management
+System backend so that new developers can quickly set up and run the project.
+
+Project stack
+-------------
+- Frontend: React Native (planned/integrated separately)
+- Backend: FastAPI
+- API server: Uvicorn
+- Validation: Pydantic
+- Database ORM: SQLAlchemy (planned/current database integration step)
+- Database: MySQL (recommended for the project)
+- Python virtual environment: venv
+
+
+1. CLONE THE PROJECT
+--------------------
+
+Clone the repository:
+
+    git clone <REPOSITORY_URL>
+
+Move into the project:
+
+    cd employee-management-system
+
+Backend folder:
+
+    cd backend
+
+
+2. PYTHON VERSION
+-----------------
+
+Check Python:
+
+Windows PowerShell:
+    python --version
+
+Mac/Linux:
+    python3 --version
+
+Recommended: use a Python version supported by all project dependencies.
+
+
+3. CREATE A VIRTUAL ENVIRONMENT
+-------------------------------
+
+IMPORTANT:
+Install project dependencies INSIDE the virtual environment.
+
+Windows PowerShell:
+
+    python -m venv venv
+
+Activate:
+
+    .env\Scripts\Activate.ps1
+
+You should see:
+
+    (venv) PS C:\...ackend>
+
+Windows CMD:
+
+    python -m venv venv
+    venv\Scriptsctivate.bat
+
+Mac/Linux:
+
+    python3 -m venv venv
+    source venv/bin/activate
+
+Verify the active Python:
+
+Windows:
+    python -c "import sys; print(sys.executable)"
+
+Mac/Linux:
+    which python
+
+The path should point to the project's venv.
+
+
+4. INSTALL DEPENDENCIES
+-----------------------
+
+After activating the virtual environment:
+
+    python -m pip install -r requirements.txt
+
+Verify:
+
+    python -m pip list
+
+IMPORTANT:
+Use "python -m pip" rather than relying on the "pip" command when troubleshooting.
+This guarantees pip belongs to the currently selected Python interpreter.
+
+If a package is missing, install it inside the active venv:
+
+    python -m pip install <package-name>
+
+Then update requirements:
+
+    python -m pip freeze > requirements.txt
+
+
+5. FASTAPI PROJECT STRUCTURE
+----------------------------
+
+Recommended structure:
+
+    employee-management-system/
+    |
+    +-- backend/
+        |
+        +-- app/
+        |   +-- __init__.py
+        |   +-- main.py
+        |   +-- models.py
+        |   +-- database.py
+        |   +-- db_models.py
+        |
+        +-- venv/
+        +-- requirements.txt
+        +-- README.txt
+
+
+6. RUN THE FASTAPI SERVER
+-------------------------
+
+From the backend folder, with venv activated:
+
+    python -m uvicorn app.main:app --reload
+
+Open Swagger API documentation:
+
+    http://127.0.0.1:8000/docs
+
+Open ReDoc:
+
+    http://127.0.0.1:8000/redoc
+
+Stop the server:
+
+    Ctrl + C
+
+
+7. COMMON "ADDRESS ALREADY IN USE" ERROR
+----------------------------------------
+
+Error:
+
+    ERROR: [Errno 48] Address already in use
+
+Meaning:
+Another FastAPI/Uvicorn server is already using the port.
+
+Solution 1:
+Find the terminal where the previous server is running and press:
+
+    Ctrl + C
+
+Solution 2:
+Run on another port:
+
+    python -m uvicorn app.main:app --reload --port 8001
+
+Then open:
+
+    http://127.0.0.1:8001/docs
+
+
+8. FASTAPI CRUD API
+-------------------
+
+Current API endpoints:
+
+    GET     /                 Health/welcome endpoint
+    GET     /employees        Get all employees
+    GET     /employees/{id}   Get one employee
+    POST    /employees        Create employee
+    PUT     /employees/{id}   Update employee
+    DELETE  /employees/{id}   Delete employee
+
+Important:
+Use "/employees" consistently. Avoid accidentally using "/employee" for the
+single-employee endpoint unless that is intentionally part of the API design.
+
+
+9. PYDANTIC MODELS
+------------------
+
+File:
+
+    app/models.py
+
+Example:
+
+    from pydantic import BaseModel
+
+
+    class EmployeeCreate(BaseModel):
+        name: str
+        department: str
+        salary: float
+
+
+    class EmployeeUpdate(BaseModel):
+        name: str
+        department: str
+        salary: float
+
+Purpose:
+Pydantic models validate incoming API request data.
+
+Example POST request:
+
+    {
+        "name": "Srikar",
+        "department": "Development",
+        "salary": 50000
+    }
+
+The POST endpoint can receive this JSON as:
+
+    employee: EmployeeCreate
+
+
+10. TEMPORARY IN-MEMORY STORAGE
+-------------------------------
+
+Early development may use:
+
+    employees = []
+    next_id = 1
+
+This is useful for learning CRUD and testing API logic.
+
+WARNING:
+This data is temporary. Restarting FastAPI clears the list.
+
+For production or persistent development data, use a real database.
+
+
+11. CRUD LOGIC
+--------------
+
+CREATE:
+POST /employees
+
+Adds a new employee to storage/database.
+
+READ ALL:
+GET /employees
+
+Returns all employees.
+
+READ ONE:
+GET /employees/{id}
+
+Finds an employee by ID.
+
+UPDATE:
+PUT /employees/{id}
+
+Updates employee name, department and salary.
+
+DELETE:
+DELETE /employees/{id}
+
+Removes an employee by ID.
+
+When an ID does not exist, return:
+
+    {
+        "message": "Employee not found"
+    }
+
+Do not return "Employee Updated" or "Employee Deleted" when no employee
+was actually found.
+
+
+12. SQLITE VS MYSQL
+-------------------
+
+SQLite:
+- Easy to set up
+- No separate database server
+- Good for learning and small applications
+- Database is usually a local .db file
+
+MySQL:
+- Separate database server
+- Better suited for multi-user/production-style applications
+- Common in professional backend environments
+- Requires MySQL Server installation and configuration
+
+Recommended project architecture:
+
+    React Native
+          |
+          v
+       FastAPI
+          |
+          v
+      SQLAlchemy
+          |
+          v
+        MySQL
+
+
+13. SQLALCHEMY DATABASE SETUP
+-----------------------------
+
+Install:
+
+    python -m pip install sqlalchemy pymysql
+
+Update requirements:
+
+    python -m pip freeze > requirements.txt
+
+Example database URL:
+
+    mysql+pymysql://USERNAME:PASSWORD@localhost/employee_db
+
+DO NOT commit real database passwords to Git.
+
+Recommended:
+Use environment variables or a .env file and add .env to .gitignore.
+
+
+14. MYSQL DATABASE
+------------------
+
+Create the database in MySQL:
+
+    CREATE DATABASE employee_db;
+
+Select it:
+
+    USE employee_db;
+
+Check databases:
+
+    SHOW DATABASES;
+
+
+15. MYSQL ON WINDOWS
+--------------------
+
+If MySQL is installed and available in PATH:
+
+    mysql --version
+
+Login:
+
+    mysql -u root -p
+
+Then create the database:
+
+    CREATE DATABASE employee_db;
+
+
+16. MYSQL ON MAC
+----------------
+
+If using Homebrew:
+
+    brew --version
+
+Install MySQL:
+
+    brew install mysql
+
+Start:
+
+    brew services start mysql
+
+Check:
+
+    mysql --version
+
+Login:
+
+    mysql -u root -p
+
+NOTE:
+Older macOS versions may not be fully supported by current Homebrew versions.
+If Homebrew cannot build MySQL dependencies, consider:
+- Updating macOS if supported
+- Installing a compatible MySQL version using the official MySQL installer
+- Using another supported installation method
+
+Official MySQL downloads:
+https://dev.mysql.com/downloads/mysql/
+
+
+17. WINDOWS VS MAC/LINUX COMMAND DIFFERENCES
+---------------------------------------------
+
+Virtual environment creation:
+
+Windows:
+    python -m venv venv
+
+Mac/Linux:
+    python3 -m venv venv
+
+Activate venv:
+
+Windows PowerShell:
+    .env\Scripts\Activate.ps1
+
+Windows CMD:
+    venv\Scriptsctivate.bat
+
+Mac/Linux:
+    source venv/bin/activate
+
+Deactivate on all platforms:
+
+    deactivate
+
+
+18. IMPORTANT: "source IS NOT RECOGNIZED" ON WINDOWS
+-----------------------------------------------------
+
+Error:
+
+    source: The term 'source' is not recognized...
+
+Cause:
+"source" is a Mac/Linux shell command.
+
+Windows PowerShell solution:
+
+    .env\Scripts\Activate.ps1
+
+Windows CMD solution:
+
+    venv\Scriptsctivate.bat
+
+
+19. POWERSHELL EXECUTION POLICY ISSUE
+-------------------------------------
+
+If PowerShell refuses to run Activate.ps1, you may see an execution policy error.
+
+For the current PowerShell session, you can use:
+
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+Then activate:
+
+    .env\Scripts\Activate.ps1
+
+Only use execution-policy changes when necessary and according to your
+organization's security policy.
+
+
+20. "UVICORN IS NOT RECOGNIZED"
+-------------------------------
+
+Error:
+
+    uvicorn: The term 'uvicorn' is not recognized...
+
+First verify the active Python:
+
+    python -c "import sys; print(sys.executable)"
+
+Then check:
+
+    python -m pip list
+
+If Uvicorn is installed in the active environment, run:
+
+    python -m uvicorn app.main:app --reload
+
+If it is missing:
+
+    python -m pip install uvicorn
+
+
+21. "NO MODULE NAMED UVICORN"
+-----------------------------
+
+Error:
+
+    No module named uvicorn
+
+Cause:
+Uvicorn was installed into a different Python environment.
+
+Fix:
+Activate the correct venv and install dependencies:
+
+    .env\Scripts\Activate.ps1
+    python -m pip install -r requirements.txt
+
+Verify:
+
+    python -m pip show uvicorn
+
+
+22. CHECK WHICH PYTHON/PIP IS ACTIVE
+------------------------------------
+
+Recommended cross-platform Python check:
+
+    python -c "import sys; print(sys.executable)"
+
+Pip check:
+
+    python -m pip --version
+
+Windows PowerShell:
+
+    Get-Command python
+    Get-Command pip
+
+Mac/Linux:
+
+    which python
+    which pip
+
+If Python and pip point to different environments, use:
+
+    python -m pip ...
+
+instead of:
+
+    pip ...
+
+
+23. VIRTUAL ENVIRONMENT CONFUSION
+---------------------------------
+
+Avoid creating multiple virtual environments for the same backend.
+
+Example of confusing setup:
+
+    employee-management-system/
+    +-- .venv/
+    +-- backend/
+        +-- venv/
+
+Recommended:
+
+    employee-management-system/
+    +-- backend/
+        +-- venv/
+
+Use one environment consistently for the backend.
+
+
+24. REQUIREMENTS.TXT
+--------------------
+
+requirements.txt contains Python packages required by the project.
+
+After installing packages:
+
+    python -m pip freeze > requirements.txt
+
+A new developer can then set up the environment with:
+
+    python -m venv venv
+
+Activate the venv.
+
+Then:
+
+    python -m pip install -r requirements.txt
+
+IMPORTANT:
+requirements.txt should be committed to Git.
+
+The virtual environment folder "venv/" should NOT be committed.
+
+Add to .gitignore:
+
+    venv/
+    .venv/
+    __pycache__/
+    *.pyc
+    .env
+
+
+25. RECOMMENDED NEW DEVELOPER SETUP
+-----------------------------------
+
+Windows PowerShell:
+
+    git clone <REPOSITORY_URL>
+    cd employee-management-system
+    cd backend
+    python -m venv venv
+    .env\Scripts\Activate.ps1
+    python -m pip install -r requirements.txt
+    python -m uvicorn app.main:app --reload
+
+Mac/Linux:
+
+    git clone <REPOSITORY_URL>
+    cd employee-management-system
+    cd backend
+    python3 -m venv venv
+    source venv/bin/activate
+    python -m pip install -r requirements.txt
+    python -m uvicorn app.main:app --reload
+
+
+26. TROUBLESHOOTING CHECKLIST
+-----------------------------
+
+If the backend does not start:
+
+1. Confirm you are in the backend directory.
+2. Confirm the venv is activated.
+3. Check Python:
+       python -c "import sys; print(sys.executable)"
+4. Check pip:
+       python -m pip --version
+5. Check installed packages:
+       python -m pip list
+6. Install requirements:
+       python -m pip install -r requirements.txt
+7. Start with:
+       python -m uvicorn app.main:app --reload
+8. Open:
+       http://127.0.0.1:8000/docs
+
+If an endpoint returns "Employee not found":
+- Create an employee first using POST /employees.
+- Note the returned ID.
+- Use that ID in GET/PUT/DELETE /employees/{id}.
+
+If data disappears after restart:
+- This is expected when using "employees = []".
+- Connect the backend to MySQL for persistent storage.
+
+
+27. GIT / PROJECT RULES
+-----------------------
+
+Commit:
+- Source code
+- requirements.txt
+- README/documentation
+- .gitignore
+
+Do not commit:
+- venv/
+- .venv/
+- __pycache__/
+- .env
+- Database passwords
+- API secrets
+- Personal credentials
+
+Example:
+
+    git add .
+    git commit -m "Add FastAPI employee CRUD API"
+    git push
+
+
+28. CURRENT DEVELOPMENT STATUS
+------------------------------
+
+Completed:
+- FastAPI application
+- Root endpoint
+- Employee CRUD API structure
+- Pydantic request models
+- In-memory employee storage
+- Virtual environment setup
+- requirements.txt workflow
+
+Next planned:
+- MySQL database
+- SQLAlchemy integration
+- Database sessions
+- Employee database table
+- Persistent CRUD operations
+- Environment variables for database credentials
+- React Native frontend integration
+- Authentication/authorization
+- Production deployment
+
+
+29. QUICK REFERENCE
+-------------------
+
+Start backend:
+
+    python -m uvicorn app.main:app --reload
+
+Swagger:
+
+    http://127.0.0.1:8000/docs
+
+Install dependencies:
+
+    python -m pip install -r requirements.txt
+
+Save dependencies:
+
+    python -m pip freeze > requirements.txt
+
+Check Python:
+
+    python --version
+
+Check active Python:
+
+    python -c "import sys; print(sys.executable)"
+
+Check pip:
+
+    python -m pip --version
+
+Deactivate:
+
+    deactivate
+
+workbench 
+C:\Users\DELL>mysql --version
+mysql  Ver 9.7.1 for Win64 on x86_64 (MySQL Community Server - GPL)
+
+C:\Users\DELL>mysql -u root -
+
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(100) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL
+);
+SHOW TABLES;
+DESCRIBE employees;
+
+SELECT * FROM employees;
+
+
+
+git config --global user.email
+git config --global user.name
+git config --global --list
+
+
+
+END OF GUIDE
+============
