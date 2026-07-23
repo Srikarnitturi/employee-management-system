@@ -1,0 +1,182 @@
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  
+  /* Dashboard Header */
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    font-size: 30px;
+  }
+  
+  .dashboard-header p {
+    margin-top: 8px;
+    color: #6b7280;
+  }
+  
+  
+  /* Add Employee Button */
+  
+  .dashboard-add-button {
+    padding: 12px 20px;
+    background-color: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  
+  .dashboard-add-button:hover {
+    background-color: #1d4ed8;
+  }
+  
+  
+  /* Statistics */
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 35px;
+  }
+  
+  
+  /* Section */
+  
+  .dashboard-section {
+    background-color: white;
+    padding: 25px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 25px;
+  }
+  
+  
+  /* Section Header */
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .section-header h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  .section-header p {
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+  
+  
+  /* View All */
+  
+  .view-all-button {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  
+  /* Recent Employees */
+  
+  .recent-employees {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  
+  /* Quick Actions */
+  
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #111827;
+    transition: 0.2s;
+  }
+  
+  .quick-action:hover {
+    border-color: #2563eb;
+    background-color: #f8fafc;
+  }
+  
+  .quick-action-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  
+  .quick-action strong {
+    display: block;
+  }
+  
+  .quick-action p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+  }
+  
+  
+  /* Responsive */
+  
+  @media (max-width: 1000px) {
+  
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+  }
+  
+  
+  @media (max-width: 768px) {
+  
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+  
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+  
+  }
