@@ -1,0 +1,17 @@
+.employee-card {
+    padding: 20px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+  }
+  
+  .employee-card h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+  
+  .employee-card p {
+    margin: 0;
+    font-size: 16px;
+  }
